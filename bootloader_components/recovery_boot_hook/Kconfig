@@ -1,0 +1,7 @@
+config BOOTLOADER_AI_PASSPORT_QEMU_SKIP_RECOVERY_HOOK
+    bool "Skip AI Passport Recovery hold hook in QEMU"
+    default n
+    help
+        QEMU holds GPIO0 in its boot strap state, which otherwise looks like
+        the five-second physical UP-key Recovery hold. This option is for the
+        isolated QEMU build only and must remain disabled for device firmware.

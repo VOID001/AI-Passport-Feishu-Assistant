@@ -1,0 +1,19 @@
+# QEMU-only settings. These are combined with sdkconfig.defaults in an isolated build.
+CONFIG_AI_PASSPORT_QEMU=y
+
+# QEMU selects the firmware's virtual Wi-Fi backend in main/CMakeLists.txt.
+# ESP-IDF keeps ESP_WIFI_ENABLED enabled for ESP32-C3 targets, but the virtual
+# backend does not initialize the RF driver or use its calibration hardware.
+
+# QEMU holds GPIO0 low as part of its default boot strap. The physical firmware
+# uses that pin for the five-second Recovery hold, which would reset forever.
+CONFIG_BOOTLOADER_FACTORY_RESET=n
+CONFIG_BOOTLOADER_AI_PASSPORT_QEMU_SKIP_RECOVERY_HOOK=y
+
+# QEMU exposes UART0 on its serial console; the physical USB Serial/JTAG
+# controller is not emulated, so use UART only in this diagnostic target.
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=n
+CONFIG_ESP_CONSOLE_UART_DEFAULT=y
+
+# The QEMU virtual panel accepts RGB565, matching the physical ST7789P3.
+CONFIG_LV_COLOR_DEPTH_16=y

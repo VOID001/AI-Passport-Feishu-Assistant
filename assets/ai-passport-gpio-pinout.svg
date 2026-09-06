@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="970" viewBox="0 0 1200 970" role="img" aria-labelledby="title desc">
+  <title id="title">FoloToy AI Passport ESP32-C3 GPIO pinout</title>
+  <desc id="desc">Firmware GPIO map for display, buttons, audio, I2C, and USB Serial JTAG.</desc>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2933; }
+    .eyebrow { font-family: "SFMono-Regular", Consolas, monospace; font-size: 18px; letter-spacing: 2px; fill: #52606d; }
+    .title { font-size: 34px; font-weight: 600; }
+    .subtitle { font-size: 19px; fill: #52606d; }
+    .heading { font-size: 21px; font-weight: 600; }
+    .label { font-size: 17px; }
+    .note { font-size: 15px; fill: #52606d; }
+    .chip { fill: #e7f5ff; stroke: #339af0; stroke-width: 2; }
+    .display { fill: #d0ebff; stroke: #339af0; stroke-width: 2; }
+    .signal { fill: #fff3bf; stroke: #fcc419; stroke-width: 2; }
+    .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; }
+    .line { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 6 5; }
+  </style>
+  <rect width="1200" height="970" fill="#f8fafc"/>
+  <text x="70" y="66" class="eyebrow">FIRMWARE PINOUT · ESP32-C3 · BSP PIN MAP</text>
+  <text x="70" y="118" class="title">FoloToy AI Passport</text>
+  <text x="70" y="150" class="subtitle">固件已分配 GPIO；未列 GPIO 不是公开应用接口</text>
+
+  <rect x="423" y="210" width="354" height="590" rx="10" class="chip"/>
+  <text x="600" y="258" text-anchor="middle" class="heading">ESP32-C3</text>
+  <text x="600" y="289" text-anchor="middle" class="note">8 MB Flash · no PSRAM</text>
+
+  <rect x="450" y="326" width="300" height="84" rx="6" class="signal"/>
+  <text x="600" y="359" text-anchor="middle" class="heading">GPIO0 · ADC1_CH0</text>
+  <text x="600" y="387" text-anchor="middle" class="label">UP / DOWN / OK 电阻分压</text>
+
+  <rect x="450" y="438" width="300" height="112" rx="6" class="display"/>
+  <text x="600" y="471" text-anchor="middle" class="heading">SPI2 · ST7789P3 显示</text>
+  <text x="600" y="501" text-anchor="middle" class="label">CS 1 · SCLK 8 · MOSI 9 · DC 20</text>
+  <text x="600" y="529" text-anchor="middle" class="label">背光 PWM 21</text>
+
+  <rect x="450" y="578" width="300" height="112" rx="6" class="signal"/>
+  <text x="600" y="611" text-anchor="middle" class="heading">I2S0 · ES8311 音频</text>
+  <text x="600" y="641" text-anchor="middle" class="label">DOUT 2 · WS 3 · DIN 4</text>
+  <text x="600" y="669" text-anchor="middle" class="label">BCLK 5 · MCLK 6</text>
+
+  <rect x="450" y="718" width="300" height="48" rx="6" class="display"/>
+  <text x="600" y="749" text-anchor="middle" class="label">I2C0：SCL 7 · SDA 10</text>
+
+  <rect x="70" y="210" width="282" height="128" rx="8" class="signal"/>
+  <text x="211" y="247" text-anchor="middle" class="heading">按键 / 启动</text>
+  <text x="211" y="277" text-anchor="middle" class="label">GPIO0 input</text>
+  <text x="211" y="305" text-anchor="middle" class="label">外部 10 kΩ 上拉</text>
+  <line x1="352" y1="274" x2="423" y2="274" class="line"/>
+
+  <rect x="70" y="380" width="282" height="164" rx="8" class="display"/>
+  <text x="211" y="417" text-anchor="middle" class="heading">显示</text>
+  <text x="211" y="447" text-anchor="middle" class="label">GPIO1 CS · GPIO8 SCLK</text>
+  <text x="211" y="475" text-anchor="middle" class="label">GPIO9 MOSI · GPIO20 DC</text>
+  <text x="211" y="503" text-anchor="middle" class="label">GPIO21 背光 PWM</text>
+  <text x="211" y="531" text-anchor="middle" class="note">RST 未接 MCU，软件复位</text>
+  <line x1="352" y1="494" x2="423" y2="494" class="line"/>
+
+  <rect x="70" y="590" width="282" height="136" rx="8" class="signal"/>
+  <text x="211" y="627" text-anchor="middle" class="heading">音频</text>
+  <text x="211" y="657" text-anchor="middle" class="label">GPIO2 DOUT · GPIO3 WS</text>
+  <text x="211" y="685" text-anchor="middle" class="label">GPIO4 DIN · GPIO5 BCLK</text>
+  <text x="211" y="713" text-anchor="middle" class="label">GPIO6 MCLK</text>
+  <line x1="352" y1="654" x2="423" y2="654" class="line"/>
+
+  <rect x="848" y="210" width="282" height="128" rx="8" class="display"/>
+  <text x="989" y="247" text-anchor="middle" class="heading">USB 日志 / 烧录</text>
+  <text x="989" y="277" text-anchor="middle" class="label">GPIO18 / GPIO19</text>
+  <text x="989" y="305" text-anchor="middle" class="label">USB Serial/JTAG</text>
+  <line x1="777" y1="274" x2="848" y2="274" class="line"/>
+
+  <rect x="848" y="408" width="282" height="136" rx="8" class="signal"/>
+  <text x="989" y="445" text-anchor="middle" class="heading">共享 I2C0</text>
+  <text x="989" y="475" text-anchor="middle" class="label">GPIO7 SCL · GPIO10 SDA</text>
+  <text x="989" y="503" text-anchor="middle" class="label">ES8311：0x18</text>
+  <text x="989" y="531" text-anchor="middle" class="label">CW2017：0x63</text>
+  <line x1="777" y1="742" x2="848" y2="742" class="line"/>
+
+  <rect x="848" y="616" width="282" height="110" rx="8" class="signal"/>
+  <text x="989" y="653" text-anchor="middle" class="heading">重要限制</text>
+  <text x="989" y="683" text-anchor="middle" class="label">GPIO0：启动与 Recovery</text>
+  <text x="989" y="711" text-anchor="middle" class="label">GPIO21：不可作 UART0 TX</text>
+
+  <rect x="70" y="856" width="1060" height="54" rx="6" class="panel"/>
+  <circle cx="101" cy="883" r="9" fill="#339af0"/>
+  <text x="120" y="890" class="note">蓝色：显示、USB 与 I2C</text>
+  <circle cx="359" cy="883" r="9" fill="#fcc419"/>
+  <text x="378" y="890" class="note">橙色：按键、音频与注意项</text>
+  <text x="654" y="890" class="note">以 components/bsp/include/bsp_pins.h 为准</text>
+</svg>

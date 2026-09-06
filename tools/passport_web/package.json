@@ -1,0 +1,17 @@
+{
+  "name": "ai-passport-local-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local control surface for AI Passport BLE synchronization",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "lucide": "0.468.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

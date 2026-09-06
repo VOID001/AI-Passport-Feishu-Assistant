@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#FFFFFF">
+    <title>AI Passport 本地同步台</title>
+    <link rel="stylesheet" href="/styles.css?v=console-1">
+    <script defer src="/vendor/lucide.js?v=console-1"></script>
+    <script type="module" src="/app.js?v=console-2"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div class="brand" aria-label="AI Passport 本地同步台">
+          <button id="demo-reveal" class="brand__mark" type="button" aria-label="AI Passport">
+            <i data-lucide="scan-line"></i>
+          </button>
+          <span class="brand__copy">
+            <strong>AI Passport</strong>
+            <span>本地同步台</span>
+          </span>
+        </div>
+
+        <div class="topbar__controls" aria-label="同步控制">
+          <label class="toggle-control" for="auto-sync">
+            <span class="toggle-control__label">自动同步</span>
+            <input id="auto-sync" type="checkbox" role="switch" disabled>
+            <span class="toggle-control__track" aria-hidden="true">
+              <span class="toggle-control__thumb"></span>
+            </span>
+          </label>
+
+          <label class="interval-control" for="sync-interval">
+            <span class="sr-only">自动同步间隔</span>
+            <i data-lucide="timer" aria-hidden="true"></i>
+            <select id="sync-interval" disabled>
+              <option value="60">每 1 分钟</option>
+              <option value="300">每 5 分钟</option>
+              <option value="600">每 10 分钟</option>
+              <option value="900">每 15 分钟</option>
+              <option value="1800">每 30 分钟</option>
+              <option value="3600">每 60 分钟</option>
+            </select>
+          </label>
+
+          <button id="sync-now" class="primary-action" type="button" disabled>
+            <i data-lucide="refresh-cw" aria-hidden="true"></i>
+            <span>立即同步</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="page-shell">
+      <div id="service-notice" class="service-notice" role="status" aria-live="polite">
+        <i data-lucide="loader-circle" aria-hidden="true"></i>
+        <span>正在读取本地服务状态…</span>
+      </div>
+
+      <div class="control-surface">
+        <aside class="status-column" aria-labelledby="status-heading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">运行状态</p>
+              <h1 id="status-heading">本机与设备</h1>
+            </div>
+            <span id="live-connection" class="live-connection" data-state="connecting">
+              <span class="live-connection__dot" aria-hidden="true"></span>
+              <span>连接中</span>
+            </span>
+          </div>
+
+          <dl class="status-list">
+            <div class="status-item">
+              <dt>
+                <span class="status-item__icon" aria-hidden="true">
+                  <i data-lucide="bluetooth"></i>
+                </span>
+                <span>BLE 设备</span>
+              </dt>
+              <dd>
+                <strong id="device-state">等待检测</strong>
+                <span id="device-detail">同步时将自动查找卡片</span>
+              </dd>
+            </div>
+
+            <div class="status-item">
+              <dt>
+                <span class="status-item__icon" aria-hidden="true">
+                  <i data-lucide="git-compare-arrows"></i>
+                </span>
+                <span>BLE 协议</span>
+              </dt>
+              <dd>
+                <strong id="protocol-version">Host v4</strong>
+                <span id="protocol-version-detail">等待设备协议校验</span>
+              </dd>
+            </div>
+
+            <div class="status-item">
+              <dt>
+                <span class="status-item__icon" aria-hidden="true">
+                  <i data-lucide="calendar-clock"></i>
+                </span>
+                <span>同步计划</span>
+              </dt>
+              <dd>
+                <strong id="scheduler-state">正在读取</strong>
+                <span id="scheduler-detail">—</span>
+              </dd>
+            </div>
+
+            <div class="status-item">
+              <dt>
+                <span class="status-item__icon" aria-hidden="true">
+                  <i data-lucide="history"></i>
+                </span>
+                <span>上次成功</span>
+              </dt>
+              <dd>
+                <strong id="last-sync">尚未同步</strong>
+                <span id="last-sync-detail">暂无成功记录</span>
+              </dd>
+            </div>
+
+            <div class="status-item">
+              <dt>
+                <span class="status-item__icon" aria-hidden="true">
+                  <i data-lucide="alarm-clock"></i>
+                </span>
+                <span>下次同步</span>
+              </dt>
+              <dd>
+                <strong id="next-sync">—</strong>
+                <span id="next-sync-detail">等待调度信息</span>
+              </dd>
+            </div>
+          </dl>
+
+          <div class="service-runtime">
+            <span>本地服务</span>
+            <time id="service-started">启动时间未知</time>
+          </div>
+        </aside>
+
+        <div class="workspace">
+          <section class="sync-section" aria-labelledby="sync-heading">
+            <div class="section-heading section-heading--workspace">
+              <div>
+                <p class="eyebrow">实时流程</p>
+                <h2 id="sync-heading">同步进度</h2>
+              </div>
+              <div id="sync-state-badge" class="state-badge" data-state="loading">
+                <span class="state-badge__dot" aria-hidden="true"></span>
+                <span>读取中</span>
+              </div>
+            </div>
+
+            <div id="sync-feedback" class="sync-feedback" role="status" aria-live="polite">
+              <div>
+                <strong id="sync-feedback-title">正在连接本地服务</strong>
+                <p id="sync-feedback-detail">状态就绪后可手动同步，或等待自动同步。</p>
+              </div>
+              <button id="retry-sync" class="text-action" type="button" hidden>
+                <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+                重新同步
+              </button>
+            </div>
+
+            <ol id="sync-rail" class="sync-rail" aria-label="同步阶段">
+              <li class="sync-stage" data-stage="0" data-state="pending">
+                <span class="sync-stage__marker" aria-hidden="true">
+                  <span class="sync-stage__number">1</span>
+                  <i data-lucide="check"></i>
+                </span>
+                <div>
+                  <strong>读取工作数据</strong>
+                  <span>日程、任务与消息计数</span>
+                </div>
+              </li>
+              <li class="sync-stage" data-stage="1" data-state="pending">
+                <span class="sync-stage__marker" aria-hidden="true">
+                  <span class="sync-stage__number">2</span>
+                  <i data-lucide="check"></i>
+                </span>
+                <div>
+                  <strong>生成今日摘要</strong>
+                  <span>整理设备显示内容</span>
+                </div>
+              </li>
+              <li class="sync-stage" data-stage="2" data-state="pending">
+                <span class="sync-stage__marker" aria-hidden="true">
+                  <span class="sync-stage__number">3</span>
+                  <i data-lucide="check"></i>
+                </span>
+                <div>
+                  <strong>连接卡片</strong>
+                  <span>发现并建立 BLE 连接</span>
+                </div>
+              </li>
+              <li class="sync-stage" data-stage="3" data-state="pending">
+                <span class="sync-stage__marker" aria-hidden="true">
+                  <span class="sync-stage__number">4</span>
+                  <i data-lucide="check"></i>
+                </span>
+                <div>
+                  <strong>写入并校验</strong>
+                  <span>传输摘要至 AI Passport</span>
+                </div>
+              </li>
+            </ol>
+
+            <div class="sync-meta" aria-label="最近同步详情">
+              <span>
+                <i data-lucide="activity" aria-hidden="true"></i>
+                <span id="attempt-time">尚无同步尝试</span>
+              </span>
+              <span id="payload-meta" hidden>
+                <i data-lucide="database" aria-hidden="true"></i>
+                <span id="payload-size">—</span>
+              </span>
+            </div>
+          </section>
+
+          <section id="demo-section" class="demo-section" aria-labelledby="demo-heading" hidden>
+            <div class="section-heading section-heading--workspace">
+              <div>
+                <p class="eyebrow">本地演示</p>
+                <h2 id="demo-heading">自定义设备内容</h2>
+              </div>
+              <label class="toggle-control" for="demo-enabled">
+                <span class="toggle-control__label">演示模式</span>
+                <input id="demo-enabled" type="checkbox" role="switch">
+                <span class="toggle-control__track" aria-hidden="true">
+                  <span class="toggle-control__thumb"></span>
+                </span>
+              </label>
+            </div>
+
+            <p class="demo-intro">本地编辑的内容会按现有 BLE 协议写入卡片，不读取飞书数据。单次 payload 不超过 12 KiB；启用时自动同步会暂停。</p>
+
+            <fieldset id="demo-editor" class="demo-editor" disabled>
+              <legend class="sr-only">演示数据编辑器</legend>
+              <div class="demo-profile">
+                <label class="field-control">
+                  <span>显示名称</span>
+                  <input id="demo-user-name" type="text" maxlength="23" value="演示用户">
+                </label>
+                <label class="field-control">
+                  <span>未读消息</span>
+                  <input id="demo-unread-count" type="number" min="0" max="65535" value="0">
+                </label>
+                <label class="avatar-upload" for="demo-avatar-file">
+                  <span class="avatar-upload__preview" id="demo-avatar-preview">演</span>
+                  <span>
+                    <strong>头像</strong>
+                    <small>PNG、JPG 或 WebP，将转换为 32 × 32 RGB565</small>
+                  </span>
+                  <input id="demo-avatar-file" type="file" accept="image/png,image/jpeg,image/webp">
+                </label>
+              </div>
+
+              <div class="demo-collections">
+                <section class="demo-collection" aria-labelledby="demo-events-heading">
+                  <div class="demo-collection__heading">
+                    <div>
+                      <h3 id="demo-events-heading">日程</h3>
+                      <span>最多 16 条；标题最多 255 UTF-8 字节；仅发送当天内容</span>
+                    </div>
+                    <button id="add-demo-event" class="icon-text-action" type="button">
+                      <i data-lucide="plus" aria-hidden="true"></i><span>添加日程</span>
+                    </button>
+                  </div>
+                  <div id="demo-events" class="demo-rows"></div>
+                </section>
+
+                <section class="demo-collection" aria-labelledby="demo-tasks-heading">
+                  <div class="demo-collection__heading">
+                    <div>
+                      <h3 id="demo-tasks-heading">待办</h3>
+                      <span>最多 16 条；标题最多 127 UTF-8 字节</span>
+                    </div>
+                    <button id="add-demo-task" class="icon-text-action" type="button">
+                      <i data-lucide="plus" aria-hidden="true"></i><span>添加待办</span>
+                    </button>
+                  </div>
+                  <div id="demo-tasks" class="demo-rows"></div>
+                </section>
+              </div>
+              <div class="demo-actions">
+                <span id="demo-validation" role="status">启用演示模式后可编辑并同步。</span>
+                <button id="sync-demo" class="primary-action" type="button">
+                  <i data-lucide="upload" aria-hidden="true"></i><span>同步演示数据</span>
+                </button>
+              </div>
+            </fieldset>
+          </section>
+
+          <section class="agenda-section" aria-labelledby="agenda-heading">
+            <div class="agenda-heading">
+              <div>
+                <p class="eyebrow">设备内容预览</p>
+                <h2 id="agenda-heading">今日日程</h2>
+                <p id="agenda-date" class="agenda-date">完成首次同步后显示</p>
+              </div>
+
+              <div id="summary-identity" class="summary-identity" hidden>
+                <div class="avatar" aria-hidden="true">
+                  <canvas id="avatar-canvas" width="32" height="32"></canvas>
+                  <span id="avatar-fallback"></span>
+                </div>
+                <div>
+                  <span>同步账户</span>
+                  <strong id="summary-user">—</strong>
+                </div>
+              </div>
+            </div>
+
+            <div id="agenda-loading" class="agenda-state">
+              <i data-lucide="loader-circle" aria-hidden="true"></i>
+              <div>
+                <strong>正在读取摘要</strong>
+                <p>从本地服务获取最近一次同步内容。</p>
+              </div>
+            </div>
+
+            <div id="agenda-empty" class="agenda-state" hidden>
+              <i data-lucide="inbox" aria-hidden="true"></i>
+              <div>
+                <strong>还没有可预览的数据</strong>
+                <p>点击“立即同步”，并确保飞书已登录、卡片停留在 BLE 页面。</p>
+              </div>
+            </div>
+
+            <div id="agenda-error" class="agenda-state agenda-state--error" hidden>
+              <i data-lucide="circle-alert" aria-hidden="true"></i>
+              <div>
+                <strong>摘要暂不可用</strong>
+                <p>解决上方同步错误后重新同步，最近一次成功数据将自动恢复。</p>
+              </div>
+            </div>
+
+            <div id="agenda-content" hidden>
+              <div class="summary-counts" aria-label="今日摘要计数">
+                <div>
+                  <span>近 30 天待办</span>
+                  <strong id="overdue-count">0</strong>
+                </div>
+                <div>
+                  <span>未读消息</span>
+                  <strong id="unread-count">0</strong>
+                </div>
+                <div>
+                  <span>日程数量</span>
+                  <strong id="event-count">0</strong>
+                </div>
+              </div>
+
+              <ol id="agenda-list" class="agenda-list" aria-label="今日日程列表"></ol>
+              <div id="no-events" class="no-events" hidden>
+                <i data-lucide="calendar-check" aria-hidden="true"></i>
+                <span>今天没有日程安排</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section class="terminal-panel" aria-labelledby="terminal-heading">
+        <div class="terminal-panel__header">
+          <div class="terminal-panel__title">
+            <i data-lucide="square-terminal" aria-hidden="true"></i>
+            <div>
+              <p class="eyebrow">LOCAL SERVICE</p>
+              <h2 id="terminal-heading">同步控制台</h2>
+            </div>
+          </div>
+          <div class="terminal-panel__meta">
+            <span class="terminal-panel__live" aria-label="日志实时更新">
+              <span aria-hidden="true"></span>
+              实时
+            </span>
+            <span id="console-count">0 条日志</span>
+          </div>
+        </div>
+        <div
+          id="sync-console"
+          class="sync-console"
+          role="log"
+          aria-live="off"
+          aria-relevant="additions"
+          aria-label="同步详细日志"
+          tabindex="0"
+        >
+          <div class="terminal-line terminal-line--empty">
+            <time>--:--:--</time>
+            <span class="terminal-line__scope">SYSTEM</span>
+            <span class="terminal-line__message">等待本地服务日志…</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="demo-toast" class="demo-toast" role="status" aria-live="polite" hidden>
+      <i data-lucide="circle-check" aria-hidden="true"></i>
+      <span>您已开启演示模式</span>
+    </div>
+    <div id="announcement" class="sr-only" role="status" aria-live="assertive"></div>
+  </body>
+</html>

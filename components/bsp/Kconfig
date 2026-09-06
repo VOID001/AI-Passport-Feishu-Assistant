@@ -1,0 +1,11 @@
+menu "AI Passport BSP"
+
+config AI_PASSPORT_QEMU
+    bool "Use the QEMU virtual RGB panel"
+    default n
+    help
+        Build the same application for Espressif's ESP32-C3 QEMU target.
+        This swaps only the physical ST7789P3 transport for QEMU's MMIO-backed
+        RGB panel. It must never be enabled for a physical AI Passport.
+
+endmenu
