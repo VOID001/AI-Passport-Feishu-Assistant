@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="AI Passport - 你的飞书工作助手：使用、同步、故障处理与二次开发指南。">
+    <meta name="theme-color" content="#0b0f14">
+    <title>AI Passport - 你的飞书工作助手</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script defer src="./assets/lucide.min.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+    <header class="topbar">
+      <a class="brand" href="#overview" aria-label="AI Passport - 你的飞书工作助手首页">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <span>
+          <strong>AI Passport</strong>
+          <small>你的飞书工作助手</small>
+        </span>
+      </a>
+
+      <nav class="topbar__links" aria-label="快捷导航">
+        <a href="#quick-start">快速开始</a>
+        <a href="#developer">开发者指南</a>
+        <a class="topbar__download" href="#downloads">
+          <i data-lucide="download" aria-hidden="true"></i>
+          下载
+        </a>
+      </nav>
+
+      <button class="icon-button menu-toggle" type="button" aria-label="打开章节导航" aria-controls="mobile-nav" aria-expanded="false">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <div id="mobile-nav" class="mobile-nav" hidden>
+      <div class="mobile-nav__backdrop" data-close-menu></div>
+      <nav class="mobile-nav__panel" aria-label="移动端章节导航">
+        <div class="mobile-nav__header">
+          <strong>章节</strong>
+          <button class="icon-button" type="button" aria-label="关闭章节导航" data-close-menu>
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+        </div>
+        <a href="#overview">产品概览</a>
+        <a href="#quick-start">快速开始</a>
+        <a href="#prerequisites">开始前检查</a>
+        <a href="#sync-service">启动同步服务</a>
+        <a href="#pairing">配对与同步</a>
+        <a href="#troubleshooting">状态与异常</a>
+        <a href="#developer">开发者指南</a>
+        <a href="#downloads">固件和代码</a>
+      </nav>
+    </div>
+
+    <main id="main-content">
+      <section id="overview" class="hero" aria-labelledby="hero-title">
+        <video class="hero__media" autoplay muted loop playsinline poster="./assets/product-demo-poster.jpg" aria-hidden="true">
+          <source src="./assets/product-demo.mp4" type="video/mp4">
+        </video>
+        <div class="hero__scrim" aria-hidden="true"></div>
+        <div class="hero__content">
+          <p class="eyebrow eyebrow--light">本地工作信息同步</p>
+          <h1 id="hero-title">AI Passport <span>- 你的飞书工作助手</span></h1>
+          <p class="hero__lead">把今天的日程、近期待办与消息摘要同步到掌上卡片。飞书凭证留在 Mac，本地服务仅监听本机地址。</p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="#quick-start">
+              <i data-lucide="arrow-down" aria-hidden="true"></i>
+              开始使用
+            </a>
+            <button class="button button--glass" type="button" data-open-demo>
+              <i data-lucide="play" aria-hidden="true"></i>
+              观看演示
+            </button>
+            <a class="button button--text-light" href="https://folotoy-passport-simulator.onrender.com/?id=4" target="_blank" rel="noreferrer">
+              在线模拟器
+              <i data-lucide="external-link" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+        <a class="hero__next" href="#capabilities" aria-label="继续阅读产品能力">
+          <span>产品能力</span>
+          <i data-lucide="chevron-down" aria-hidden="true"></i>
+        </a>
+      </section>
+
+      <dialog id="demo-dialog" class="demo-dialog">
+        <div class="demo-dialog__header">
+          <div>
+            <strong>AI Passport - 你的飞书工作助手 · 实机演示</strong>
+            <span>31 秒</span>
+          </div>
+          <button class="icon-button" type="button" aria-label="关闭演示" data-close-demo>
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+        </div>
+        <video controls playsinline preload="none" poster="./assets/product-demo-poster.jpg">
+          <source data-src="./assets/product-demo.mp4" type="video/mp4">
+          当前浏览器不支持视频播放。
+        </video>
+      </dialog>
+
+      <section id="capabilities" class="capabilities section-band">
+        <div class="content-width">
+          <div class="section-intro">
+            <p class="eyebrow">产品能力</p>
+            <h2>日程在手，数据不离开你的 Mac</h2>
+            <p>本地同步服务通过 <code>lark-cli</code> 获取工作摘要，经 Bluetooth LE 分片传输并校验，卡片只保存用于展示的最近摘要。</p>
+          </div>
+
+          <div class="capability-grid">
+            <article>
+              <span class="feature-icon"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
+              <h3>工作摘要</h3>
+              <p>聚合今日日程、近 30 天待办、未读消息计数与账号信息。</p>
+            </article>
+            <article>
+              <span class="feature-icon"><i data-lucide="bluetooth" aria-hidden="true"></i></span>
+              <h3>本地 BLE 同步</h3>
+              <p>自动发现设备，分片传输、CRC 校验，并由卡片完成最终确认。</p>
+            </article>
+            <article>
+              <span class="feature-icon"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+              <h3>凭证隔离</h3>
+              <p>飞书凭证、macOS 蓝牙权限、配对记录与同步日志只保留在 Mac。</p>
+            </article>
+            <article>
+              <span class="feature-icon"><i data-lucide="wifi-off" aria-hidden="true"></i></span>
+              <h3>离线可读</h3>
+              <p>有效摘要写入卡片 NVS，断连或重启后仍可查看最近一次内容。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <div class="guide-layout content-width">
+        <aside class="chapter-nav" aria-label="章节导航">
+          <p>使用指南</p>
+          <a href="#quick-start">快速开始</a>
+          <a href="#prerequisites">开始前检查</a>
+          <a href="#sync-service">启动同步服务</a>
+          <a href="#pairing">配对与日常同步</a>
+          <a href="#troubleshooting">状态与异常</a>
+          <p>开发与发布</p>
+          <a href="#developer">架构与职责</a>
+          <a href="#local-development">本地验证</a>
+          <a href="#extensions">扩展规范</a>
+          <a href="#downloads">固件和代码</a>
+        </aside>
+
+        <article class="guide-content">
+          <section id="quick-start" class="content-section">
+            <div class="section-heading">
+              <span class="section-number">01</span>
+              <div>
+                <p class="eyebrow">用户使用指南</p>
+                <h2>快速开始</h2>
+              </div>
+            </div>
+
+            <div class="success-note">
+              <i data-lucide="circle-check" aria-hidden="true"></i>
+              <p><strong>首次使用只需 4 步：</strong>刷入固件、准备设备、启动同步服务，然后在 Mac 上完成蓝牙配对并等待摘要写入。</p>
+            </div>
+
+            <ol class="step-list step-list--overview">
+              <li>
+                <span>1</span>
+                <div>
+                  <h3>刷入固件</h3>
+                  <p>刷入包含 Work Assistant 的固件，并保持充足电量。</p>
+                  <a href="https://ai-passport.folotoy.cn/tools/web-flasher/" target="_blank" rel="noreferrer">打开网页刷机工具 <i data-lucide="external-link" aria-hidden="true"></i></a>
+                </div>
+              </li>
+              <li>
+                <span>2</span>
+                <div>
+                  <h3>准备设备</h3>
+                  <p>给 AI Passport 充电并开机，放在 Mac 蓝牙连接范围内。</p>
+                </div>
+              </li>
+              <li>
+                <span>3</span>
+                <div>
+                  <h3>启动同步服务</h3>
+                  <p>解压 macOS 脚本包，在 Terminal 运行 <code>bash start.sh</code>。</p>
+                </div>
+              </li>
+              <li>
+                <span>4</span>
+                <div>
+                  <h3>配对并同步</h3>
+                  <p>在 macOS 弹窗输入卡片上的六位代码，等待最新摘要出现。</p>
+                </div>
+              </li>
+            </ol>
+
+            <div class="notice notice--warning">
+              <i data-lucide="pin" aria-hidden="true"></i>
+              <p><strong>使用时请保持：</strong>同步服务的 Terminal 窗口不关闭、Mac 蓝牙已开启、卡片在连接范围内。首次配对不要在 macOS 系统设置中手动连接同名 BLE 设备。</p>
+            </div>
+          </section>
+
+          <section id="prerequisites" class="content-section">
+            <div class="section-heading">
+              <span class="section-number">02</span>
+              <div>
+                <p class="eyebrow">准备工作</p>
+                <h2>开始前检查</h2>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>项目</th>
+                    <th>要求</th>
+                    <th>检查</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>AI Passport</strong></td>
+                    <td>已刷入包含 Work Assistant 的固件，并保持充足电量。</td>
+                    <td>开机后进入 Work Assistant；无缓存数据时显示蓝牙初始化页面。</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mac</strong></td>
+                    <td>macOS、Node.js 20+、Python 3、<code>lark-cli</code>。</td>
+                    <td><code>node --version</code><br><code>python3 --version</code><br><code>lark-cli auth status --verify</code></td>
+                  </tr>
+                  <tr>
+                    <td><strong>权限</strong></td>
+                    <td><code>lark-cli</code> 已登录当前用户；Terminal 已获蓝牙权限。</td>
+                    <td>首次连接时按 macOS 提示授权；飞书权限不足时按终端提示处理。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="checklist" aria-label="开始前检查清单">
+              <label>
+                <input type="checkbox" data-check="device-ready">
+                <span>卡片已开机，并放在 Mac 蓝牙可连接范围内。</span>
+              </label>
+              <label>
+                <input type="checkbox" data-check="lark-ready">
+                <span>Mac 已登录用于同步的飞书账号。</span>
+              </label>
+              <label>
+                <input type="checkbox" data-check="ble-ready">
+                <span>未在 macOS 系统设置中手动连接其他同名 BLE 设备。</span>
+              </label>
+            </div>
+          </section>
+
+          <section id="sync-service" class="content-section">
+            <div class="section-heading">
+              <span class="section-number">03</span>
+              <div>
+                <p class="eyebrow">第 1 步</p>
+                <h2>启动 Mac 同步服务</h2>
+              </div>
+            </div>
+
+            <ol class="procedure">
+              <li>
+                <span class="procedure__number">1</span>
+                <p>下载 <code>AI-Passport-Sync-macos.zip</code> 并解压。</p>
+              </li>
+              <li>
+                <span class="procedure__number">2</span>
+                <p>打开 Terminal，输入 <code>cd </code>，把解压后的 <code>AI Passport Sync</code> 文件夹拖入窗口，按 Return。</p>
+              </li>
+              <li>
+                <span class="procedure__number">3</span>
+                <div>
+                  <p>启动服务，并保持 Terminal 窗口打开。脚本会自动检查环境和安装缺失依赖。</p>
+                  <div class="code-block">
+                    <code>bash start.sh</code>
+                    <button class="icon-button code-copy" type="button" data-copy="bash start.sh" aria-label="复制启动命令">
+                      <i data-lucide="copy" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <span class="procedure__number">4</span>
+                <p>浏览器会打开本地同步台。若未自动打开，使用 Terminal 显示的地址，默认是 <a href="http://127.0.0.1:4177"><code>127.0.0.1:4177</code></a>。</p>
+              </li>
+              <li>
+                <span class="procedure__number">5</span>
+                <p>等待自动同步，或在页面点击“立即同步”。</p>
+              </li>
+            </ol>
+
+            <div class="notice notice--info">
+              <i data-lucide="info" aria-hidden="true"></i>
+              <p>压缩包不包含 Node modules、Python 虚拟环境、飞书凭证、BLE 配对记录或同步日志。每位用户首次启动时会在自己的 Mac 上完成依赖安装和授权。</p>
+            </div>
+          </section>
+
+          <section id="pairing" class="content-section">
+            <div class="section-heading">
+              <span class="section-number">04</span>
+              <div>
+                <p class="eyebrow">第 2 步</p>
+                <h2>首次配对与日常同步</h2>
+              </div>
+            </div>
+
+            <div class="pairing-grid">
+              <article>
+                <span class="feature-icon"><i data-lucide="badge-plus" aria-hidden="true"></i></span>
+                <h3>首次同步</h3>
+                <ol>
+                  <li>卡片没有历史数据时会立即广播，等待 Mac 发现。</li>
+                  <li>同步服务发起连接后，在 macOS 弹窗输入卡片显示的六位配对码。</li>
+                  <li>等待网页显示设备确认，卡片会切换为最新工作摘要。</li>
+                </ol>
+              </article>
+              <article>
+                <span class="feature-icon"><i data-lucide="refresh-cw" aria-hidden="true"></i></span>
+                <h3>后续同步</h3>
+                <ol>
+                  <li>进入解压后的目录，执行 <code>bash start.sh</code>，并让卡片保持在附近。</li>
+                  <li>服务启动后会自动同步，也可手动点击“立即同步”。</li>
+                  <li>断连不会清除卡片数据。重新配对时，卡片会自动展示新的配对码。</li>
+                </ol>
+              </article>
+            </div>
+          </section>
+
+          <section id="troubleshooting" class="content-section">
+            <div class="section-heading">
+              <span class="section-number">05</span>
+              <div>
+                <p class="eyebrow">第 3 步</p>
+                <h2>查看状态并处理异常</h2>
+              </div>
+            </div>
+
+            <div class="status-table">
+              <div class="status-row status-row--head">
+                <span>卡片或网页提示</span>
+                <span>处理方法</span>
+              </div>
+              <div class="status-row">
+                <code>Waiting for computer.</code>
+                <p>卡片正在广播。确认 Mac 蓝牙开启，并让同步服务继续运行。</p>
+              </div>
+              <div class="status-row">
+                <code>Enter the pairing code on your computer.</code>
+                <p>在 macOS 的蓝牙配对弹窗中输入卡片显示的六位代码。</p>
+              </div>
+              <div class="status-row">
+                <code>Receiving work data.</code>
+                <p>正在传输和校验。保持卡片在附近，不要关闭 Terminal。</p>
+              </div>
+              <div class="status-row">
+                <code>Bluetooth sync failed.</code>
+                <p>检查蓝牙权限、卡片电量和 <code>lark-cli auth status --verify</code>，然后点击“立即同步”重试。</p>
+              </div>
+              <div class="status-row">
+                <strong>网页无法打开</strong>
+                <p>确认 Terminal 未关闭；如果默认端口冲突，以 Terminal 输出的地址为准。</p>
+              </div>
+            </div>
+
+            <p class="closing-note">停止服务时，在应用打开的 Terminal 窗口按 <kbd>Control</kbd> + <kbd>C</kbd>，然后关闭窗口。</p>
+          </section>
+
+          <section id="developer" class="content-section content-section--developer">
+            <div class="section-heading">
+              <span class="section-number">06</span>
+              <div>
+                <p class="eyebrow">开发者二次开发指南</p>
+                <h2>架构与职责边界</h2>
+              </div>
+            </div>
+
+            <figure class="architecture">
+              <div class="architecture__viewport">
+                <img src="./assets/architecture.jpg" alt="AI Passport Work Assistant 产品能力架构：飞书数据源经过 Mac 本地同步服务和 Bluetooth LE 传输至 AI Passport 卡片">
+              </div>
+              <figcaption>飞书数据由 Mac 本地服务汇总，通过 BLE 传输；卡片不保存 access token、app secret 或密码。</figcaption>
+            </figure>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>组件</th>
+                    <th>职责</th>
+                    <th>不应承担的职责</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>main/</code></td>
+                    <td>界面、状态机、BLE bridge、持久化摘要与应用逻辑。</td>
+                    <td>复用的板级引脚与外设细节。</td>
+                  </tr>
+                  <tr>
+                    <td><code>components/bsp/</code></td>
+                    <td>显示、按键、音频、电量计、I2C 等板级能力；硬件参数以 <code>bsp_pins.h</code> 为唯一事实来源。</td>
+                    <td>业务页面或飞书同步逻辑。</td>
+                  </tr>
+                  <tr>
+                    <td><code>tools/passport_bridge/</code></td>
+                    <td>通过本机 <code>lark-cli</code> 汇总数据，并经 CoreBluetooth/Bleak 传输摘要。</td>
+                    <td>保存或暴露飞书凭证。</td>
+                  </tr>
+                  <tr>
+                    <td><code>tools/passport_web/</code></td>
+                    <td>仅监听 localhost 的同步控制台和进度展示。</td>
+                    <td>替代本机蓝牙服务，或部署为云端 BLE 服务。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="local-development" class="content-section">
+            <div class="section-heading">
+              <span class="section-number">07</span>
+              <div>
+                <p class="eyebrow">开发与验证</p>
+                <h2>本地开发</h2>
+              </div>
+            </div>
+
+            <div class="command-group">
+              <div class="command-block">
+                <div class="command-block__header">
+                  <span>激活 ESP-IDF 5.5.3 并执行固件门禁</span>
+                  <button class="icon-button code-copy" type="button" data-copy="source &lt;ESP-IDF-v5.5.3-path&gt;/export.sh&#10;idf.py --version&#10;./tools/validate.sh --firmware" aria-label="复制固件验证命令">
+                    <i data-lucide="copy" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <pre><code>source &lt;ESP-IDF-v5.5.3-path&gt;/export.sh
+idf.py --version
+./tools/validate.sh --firmware</code></pre>
+              </div>
+
+              <div class="command-block">
+                <div class="command-block__header">
+                  <span>运行本地同步台</span>
+                  <button class="icon-button code-copy" type="button" data-copy="./run_assistant_web.sh --check&#10;./run_assistant_web.sh" aria-label="复制本地同步台命令">
+                    <i data-lucide="copy" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <pre><code>./run_assistant_web.sh --check
+./run_assistant_web.sh</code></pre>
+              </div>
+
+              <div class="command-block">
+                <div class="command-block__header">
+                  <span>运行网页测试并打包 macOS 一键包</span>
+                  <button class="icon-button code-copy" type="button" data-copy="cd tools/passport_web&#10;npm test&#10;cd ../..&#10;./tools/package_assistant_web.sh" aria-label="复制网页测试和打包命令">
+                    <i data-lucide="copy" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <pre><code>cd tools/passport_web
+npm test
+cd ../..
+./tools/package_assistant_web.sh</code></pre>
+              </div>
+            </div>
+
+            <div class="notice notice--danger">
+              <i data-lucide="triangle-alert" aria-hidden="true"></i>
+              <p><strong>固件兼容性契约：</strong>目标固定为 ESP32-C3、8 MB Flash、无 PSRAM、ESP-IDF 5.5.3。不得移动或覆盖 <code>cardid</code>（<code>0x356000</code>）和永久 Recovery（<code>0x700000</code>）；不得执行 <code>idf.py erase-flash</code>。已有身份的设备优先使用小程序 BLE 安装或安全的分段更新。</p>
+            </div>
+          </section>
+
+          <section id="extensions" class="content-section">
+            <div class="section-heading">
+              <span class="section-number">08</span>
+              <div>
+                <p class="eyebrow">工程约束</p>
+                <h2>扩展规范与交付检查</h2>
+              </div>
+            </div>
+
+            <ul class="rule-list">
+              <li><i data-lucide="circuit-board" aria-hidden="true"></i><span>新增硬件参数先更新 <code>components/bsp/include/bsp_pins.h</code>，不要在应用 C 文件重复定义 GPIO、I2C 地址或屏幕尺寸。</span></li>
+              <li><i data-lucide="lock-keyhole" aria-hidden="true"></i><span>LVGL 不是线程安全的；LVGL 任务外访问对象必须持有 <code>bsp_lvgl_lock()</code>。</span></li>
+              <li><i data-lucide="timer-off" aria-hidden="true"></i><span>按键回调不能阻塞。网络、存储、音频与 BLE 等耗时操作使用工作任务。</span></li>
+              <li><i data-lucide="test-tube-diagonal" aria-hidden="true"></i><span>协议、状态机、时间和布局计算应与 ESP-IDF/LVGL 解耦，并添加 host tests。</span></li>
+              <li><i data-lucide="binary" aria-hidden="true"></i><span>BLE 摘要协议必须保持长度、序列、CRC 和最大负载限制兼容；修改时同步更新固件、Python bridge 和测试。</span></li>
+              <li><i data-lucide="key-round" aria-hidden="true"></i><span>不要将飞书 token、app secret、设备 QR 密钥、蓝牙标识或用户日志提交到仓库或放入 macOS 分发包。</span></li>
+            </ul>
+
+            <div class="checklist checklist--delivery" aria-label="开发交付检查清单">
+              <label>
+                <input type="checkbox" data-check="host-tests">
+                <span>运行最小相关 host tests 与 <code>./tools/validate.sh --static</code>。</span>
+              </label>
+              <label>
+                <input type="checkbox" data-check="firmware-gate">
+                <span>运行 <code>./tools/validate.sh --firmware</code>，仅分发 <code>build/FoloToy-AI-Passport-full.bin</code>。</span>
+              </label>
+              <label>
+                <input type="checkbox" data-check="device-tests">
+                <span>实机验证显示、按键、BLE 配对、断连后的缓存展示和重新配对。</span>
+              </label>
+              <label>
+                <input type="checkbox" data-check="package-gate">
+                <span>打包前运行 <code>npm test</code> 和 <code>./tools/package_assistant_web.sh</code>，确认压缩包不含凭证或用户数据。</span>
+              </label>
+            </div>
+          </section>
+        </article>
+      </div>
+
+      <section id="downloads" class="downloads section-band section-band--dark">
+        <div class="content-width">
+          <div class="downloads__heading">
+            <div>
+              <p class="eyebrow eyebrow--light">固件和代码</p>
+              <h2>下载当前版本</h2>
+              <p>当前完整固件和 macOS 本地同步包已随站点提供。下载后按上方用户指南操作。</p>
+            </div>
+            <span class="version-badge">Latest · v0.0.3</span>
+          </div>
+
+          <div class="download-grid">
+            <article class="download-item">
+              <span class="download-item__icon"><i data-lucide="microchip" aria-hidden="true"></i></span>
+              <div>
+                <p>ESP32-C3 完整固件</p>
+                <h3>FoloToy-AI-Passport-full.bin</h3>
+                <span>1.8 MB · 完整合并镜像</span>
+              </div>
+              <a class="icon-button icon-button--light" href="./assets/FoloToy-AI-Passport-full.bin" download aria-label="下载当前版本完整固件">
+                <i data-lucide="download" aria-hidden="true"></i>
+              </a>
+            </article>
+            <article class="download-item">
+              <span class="download-item__icon"><i data-lucide="laptop" aria-hidden="true"></i></span>
+              <div>
+                <p>macOS 本地同步服务</p>
+                <h3>AI-Passport-Sync-macos.zip</h3>
+                <span>65 KB · 不含用户凭证</span>
+              </div>
+              <a class="icon-button icon-button--light" href="./assets/AI-Passport-Sync-macos.zip" download aria-label="下载当前版本 macOS 本地同步服务">
+                <i data-lucide="download" aria-hidden="true"></i>
+              </a>
+            </article>
+          </div>
+
+          <div class="firmware-warning">
+            <i data-lucide="shield-alert" aria-hidden="true"></i>
+            <p>完整镜像从 <code>0x0</code> 写入，仅适用于确认安全可直刷的设备。已有设备身份时优先使用小程序 BLE 安装或分段更新。当前镜像结束于 <code>cardid</code> 保护区之前。</p>
+          </div>
+
+          <details class="release-history">
+            <summary>
+              <span>历史版本</span>
+              <i data-lucide="chevron-down" aria-hidden="true"></i>
+            </summary>
+            <div class="release-history__content">
+              <div class="release-row">
+                <strong>v0.0.3</strong>
+                <ul>
+                  <li>支持完成飞书任务</li>
+                  <li>支持设置功能</li>
+                  <li>持久化保存到 NVS</li>
+                </ul>
+                <div>
+                  <a href="./assets/FoloToy-AI-Passport-full.bin" download>固件</a>
+                  <a href="./assets/AI-Passport-Sync-macos.zip" download>macOS Host</a>
+                </div>
+              </div>
+              <div class="release-row">
+                <strong>v0.0.1</strong>
+                <ul>
+                  <li>支持夜间模式</li>
+                  <li>支持同步功能</li>
+                </ul>
+                <div>
+                  <a href="./assets/FoloToy-AI-Passport-full-v0.0.1.bin" download>固件</a>
+                  <a href="./assets/AI-Passport-Sync-macos-v0.0.1.zip" download>macOS Host</a>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="content-width">
+        <div>
+          <strong>AI Passport - 你的飞书工作助手</strong>
+          <p>使用与开发指南 · 文档版本 304</p>
+        </div>
+      </div>
+    </footer>
+
+    <div class="toast" role="status" aria-live="polite" hidden>
+      <i data-lucide="check" aria-hidden="true"></i>
+      <span>已复制</span>
+    </div>
+  </body>
+</html>
